@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14243a">
+<meta name="description" content="予備試験＋司法書士 肢別○×学習">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="予備×司法">
+<title>予備×司法書士 肢トレ</title>
+<style>
+:root{color-scheme:light;--ink:#172235;--muted:#697586;--line:#e2e7ed;--paper:#f4f6f8;--navy:#14243a;--green:#16834a;--red:#c43d3d}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif}
+header{background:var(--navy);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 14px}
+h1{font-size:19px;margin:0;font-weight:750}header small{opacity:.75}
+main{max-width:680px;margin:0 auto;padding:18px 16px calc(28px + env(safe-area-inset-bottom))}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin:0 0 14px;box-shadow:0 2px 10px #14243a08}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:7px}
+select,button{font:inherit}select{width:100%;padding:13px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+button{border:0;border-radius:12px;padding:14px 12px;font-weight:700;cursor:pointer}
+.primary{background:var(--navy);color:#fff}.secondary{background:#edf1f5;color:var(--ink)}.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+button:disabled{opacity:.4;cursor:default}
+.meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;margin-bottom:12px}
+.progress{height:5px;background:#e8edf1;border-radius:9px;overflow:hidden;margin-bottom:16px}.bar{height:100%;background:var(--green);width:0}
+.stem{font-size:13px;color:var(--muted);line-height:1.7;white-space:pre-wrap;margin-bottom:12px;overflow-wrap:anywhere}
+.stem.collapsed{max-height:5.1em;overflow:hidden;position:relative}
+.stemtoggle{font-size:12px;color:var(--navy);background:none;padding:0 0 10px;border-radius:0;font-weight:600}
+.branch{display:inline-block;background:var(--navy);color:#fff;border-radius:8px;padding:2px 10px;font-size:13px;font-weight:700;margin-bottom:8px}
+.statement{font-size:19px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:14px}
+.statement .exp{display:block;font-size:12px;color:var(--muted);line-height:1.6}
+.marknote{font-size:12px;color:var(--muted);margin-bottom:12px}
+.judge button{font-size:34px;padding:14px 0;background:#fff;border:2px solid var(--line);color:var(--ink)}
+.judge #maru{color:var(--green);border-color:#bfe3cf}.judge #batsu{color:var(--red);border-color:#f0c7c7}
+.result{margin-top:14px;padding:14px;border-radius:12px;background:#f7f9fb;border:1px solid var(--line)}
+.result .head{font-size:18px;font-weight:800;margin-bottom:4px}
+.result.ok .head{color:var(--green)}.result.ng .head{color:var(--red)}
+.result .big{font-size:56px;font-weight:800;line-height:1.1;text-align:center;margin:6px 0}
+.big.correct{color:var(--green)}.big.wrong{color:var(--red)}
+.result .sub{font-size:12px;color:var(--muted);line-height:1.7}
+.hidden{display:none!important}.subtle{font-size:12px;color:var(--muted);line-height:1.7}
+.topline{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.star{font-size:14px;cursor:pointer;padding:6px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:10px}
+#error{border-color:#e6b8b8;color:#8a2a2a;white-space:pre-wrap}
+.stats{margin-top:14px;font-size:13px;line-height:1.8}
+.linkbtn{background:none;color:var(--muted);font-weight:500;font-size:12px;text-decoration:underline;padding:10px 4px}
+.sttable{width:100%;border-collapse:collapse;font-size:13px}.sttable th{font-weight:600;color:var(--muted);text-align:right;padding:6px 4px;border-bottom:1px solid var(--line);font-size:12px}.sttable th:first-child,.sttable td:first-child{text-align:left}
+.sttable td{padding:9px 4px;border-bottom:1px solid #eef1f4;text-align:right;font-variant-numeric:tabular-nums}
+.sttable tr.minor td:first-child{color:var(--muted)}.sttable tr.total td{font-weight:800;border-top:2px solid var(--line)}
+.acc{display:inline-block;min-width:64px;padding:3px 6px;border-radius:6px;font-weight:700;color:#fff;background:#aab4c0}
+.acc.hi{background:var(--green)}.acc.mid{background:#d08a1f}.acc.lo{background:var(--red)}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);margin:14px 0 0}.chk input{width:20px;height:20px}
+@media(max-width:390px){.statement{font-size:17px}.panel{padding:15px}}
+</style>
+</head>
+<body>
+<header><h1>予備×司法書士 肢トレ</h1><small>見る・○×判断する・次へ　<span id="ver">v001</span></small></header>
+<main>
+<section id="setup" class="panel">
+  <h2 style="font-size:17px;margin:0 0 16px">学習条件を選択</h2>
+  <label for="subject">科目</label><select id="subject"></select>
+  <div style="height:14px"></div>
+  <label for="year">年度</label><select id="year"></select>
+  <div style="height:14px"></div>
+  <label for="mode">出題</label>
+  <select id="mode">
+    <option value="mix">総合ランダム（科目バランス）</option>
+    <option value="random">ランダム（単純）</option>
+    <option value="normal">問題順</option>
+    <option value="wrong">間違えた肢のみ</option>
+    <option value="unseen">未回答のみ</option>
+    <option value="favorites">お気に入りのみ</option>
+  </select>
+  <div style="height:14px"></div>
+  <label for="count">出題数（ランダム系）</label>
+  <select id="count"><option value="30">30肢</option><option value="50" selected>50肢</option><option value="100">100肢</option><option value="200">200肢</option><option value="0">全部</option></select>
+  <label class="chk" id="weakwrap"><input type="checkbox" id="weak" checked>弱点優先（間違えた肢・未回答を出やすく）</label>
+  <div style="height:16px"></div>
+  <button id="start" class="primary" style="width:100%">学習開始</button>
+  <button id="showstats" class="secondary" style="width:100%;margin-top:10px">科目別の成績を見る</button>
+  <div class="stats" id="stats"></div>
+  <p class="subtle" id="counts"></p>
+  <button id="reset" class="linkbtn">学習記録をリセット</button>
+</section>
+<section id="statsview" class="hidden">
+  <div class="topline"><button id="statsback" class="ghost" style="padding:9px 12px">← 戻る</button></div>
+  <div class="panel">
+    <h2 style="font-size:17px;margin:0 0 4px">科目別の成績</h2>
+    <p class="subtle" style="margin:0 0 10px">累積＝これまでの全回答の正答率／直近7日＝この7日間の回答の正答率</p>
+    <table class="sttable" id="sttable"></table>
+    <p class="subtle" id="stnote" style="margin-top:12px"></p>
+  </div>
+</section>
+<section id="study" class="hidden">
+  <div class="topline"><button id="home" class="ghost" style="padding:9px 12px">条件選択</button><span id="favorite" class="star">☆ お気に入り</span></div>
+  <div class="panel">
+    <div class="meta"><span id="position"></span><span id="subjectLabel"></span></div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    <div id="stem" class="stem"></div>
+    <button id="stemtoggle" class="stemtoggle hidden">▼ 設問文を全部読む</button>
+    <div><span id="branch" class="branch"></span></div>
+    <div id="statement" class="statement"></div>
+    <div id="marknote" class="marknote"></div>
+    <div id="judge" class="row judge"><button id="maru">○</button><button id="batsu">×</button></div>
+    <div id="result" class="result hidden"></div>
+    <div style="text-align:center"><button id="peek" class="linkbtn">答えだけ見る（記録しない）</button></div>
+  </div>
+  <div class="row">
+    <button id="prev" class="secondary">← 前へ</button>
+    <button id="next" class="primary">次へ →</button>
+  </div>
+  <p class="subtle" style="text-align:center;margin-top:12px">正誤は出題当時の解答から展開したデータです。現行法との照合は未完了です。</p>
+</section>
+<section id="error" class="panel hidden"></section>
+<footer>問題データはdataフォルダに同梱。学習記録・お気に入りはこの端末内に保存されます。</footer>
+</main>
+<script>window.addEventListener("error",function(e){var b=document.getElementById("error");if(b){b.classList.remove("hidden");b.textContent="エラー: "+e.message+"（"+(e.filename||"").split("/").pop()+":"+e.lineno+"）"}});</script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const REC_KEY="yobi-shiho-rec-v1",FAV_KEY="yobi-shiho-fav-v1",LOG_KEY="yobi-shiho-log-v1";
+let mem={};
+function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return mem[k]!==undefined?mem[k]:def}}
+function save(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function recs(){return load(REC_KEY,{})}
+function favs(){return load(FAV_KEY,[])}
+function showError(m){$("error").classList.remove("hidden");$("error").textContent=m}
+let all=[],deck=[],index=0,state="ask";
+// 科目の並び順と出題の重み（主要=1、マイナー=0.1）
+const SUBJ_META=[["CONST","憲法",1],["ADMIN","行政法",1],["CIVPRO","民事訴訟法",1],["CRIMINAL","刑法",1],["CRIMPRO","刑事訴訟法",1],
+["CIVIL","民法",1],["COMM","商法",1],["REALREG","不動産登記法",1],["COMMREG","商業登記法",1],
+["CIVEXEC","民事執行法",0.1],["CIVPRES","民事保全法",0.1],["DEPOSIT","供託法",0.1],["SCRIVENER","司法書士法",0.1]];
+const SUBJ_W=Object.fromEntries(SUBJ_META.map(m=>[m[0],m[2]]));
+const SUBJ_ORDER=SUBJ_META.map(m=>m[0]);
+function yearRank(f){const m=f.match(/^([RSH])(\d+)$/);return m?(m[1]==="H"?1988:2018)+ +m[2]:0}
+function candidates(){const a=[];for(let n=10;n>=1;n--)a.push("R"+String(n).padStart(2,"0"));for(let n=10;n>=1;n--)a.push("S"+String(n).padStart(2,"0"));return a}
+function loadYear(name){return new Promise(res=>{const s=document.createElement("script");s.src="data/"+name+".js?v=1";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)})}
+function subjName(sid){const x=all.find(x=>x.subject_id===sid);return x?x.subject:sid}
+function init(){
+  const subs=SUBJ_ORDER.filter(s=>all.some(x=>x.subject_id===s));
+  $("ver").textContent="v001・"+all.length+"肢";
+  $("subject").innerHTML='<option value="ALL">すべて</option>'+subs.map(s=>`<option value="${esc(s)}">${esc(subjName(s))}</option>`).join("");
+  const years=[...new Set(all.map(x=>x.year))];
+  $("year").innerHTML='<option value="ALL">すべて</option>'+years.map(y=>`<option>${esc(y)}</option>`).join("");
+  drawStats();
+}
+window.QDATA=[];
+Promise.all(candidates().map(loadYear)).then(()=>{
+  const rank=x=>yearRank((x.id||"").split("-")[0]);
+  all=window.QDATA.map((x,i)=>[x,i]).sort((a,b)=>rank(b[0])-rank(a[0])||a[1]-b[1]).map(p=>p[0]);
+  if(!all.length){showError("問題データ(data/フォルダのR08.jsなど)を読み込めませんでした。\nindex.html と data フォルダが同じ場所にあるか確認してください。");return}
+  init();
+});
+function drawStats(){
+  const r=recs();let n=0,c=0,w=0;
+  all.forEach(x=>{const q=r[x.id];if(q){n++;q.last?c++:w++}});
+  $("stats").innerHTML=`回答済み <b>${n}</b> / ${all.length}肢　直近正解 <b style="color:var(--green)">${c}</b>　直近不正解 <b style="color:var(--red)">${w}</b>`;
+  const cnt={};all.forEach(x=>cnt[x.subject_id]=(cnt[x.subject_id]||0)+1);
+  $("counts").textContent="収録："+SUBJ_ORDER.filter(s=>cnt[s]).map(s=>`${subjName(s)} ${cnt[s]}肢`).join(" ／ ")+"　※総合ランダムは主要科目が同率、マイナー科目(民執・民保・供託・司書)は1/10";
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pickMix(pool,n,weak){
+  const r=recs(),by={};
+  pool.forEach(x=>(by[x.subject_id]=by[x.subject_id]||[]).push(x));
+  const out=[],lim=n>0?n:pool.length;
+  while(out.length<lim){
+    const sids=Object.keys(by).filter(s=>by[s].length);if(!sids.length)break;
+    const tot=sids.reduce((a,s)=>a+(SUBJ_W[s]??1),0);let t=Math.random()*tot,pick=sids[sids.length-1];
+    for(const s of sids){t-=(SUBJ_W[s]??1);if(t<=0){pick=s;break}}
+    const arr=by[pick];
+    const ws=arr.map(x=>{if(!weak)return 1;const q=r[x.id];return !q?2:(q.last?1:3)});
+    let u=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;for(;i<ws.length-1;i++){u-=ws[i];if(u<=0)break}
+    out.push(arr.splice(i,1)[0]);
+  }
+  return out;
+}
+function start(){
+  const s=$("subject").value,y=$("year").value,m=$("mode").value,r=recs(),f=favs(),n=+$("count").value;
+  let rows=all.filter(x=>(s==="ALL"||x.subject_id===s)&&(y==="ALL"||x.year===y));
+  if(m==="wrong")rows=rows.filter(x=>r[x.id]&&!r[x.id].last);
+  if(m==="unseen")rows=rows.filter(x=>!r[x.id]);
+  if(m==="favorites")rows=rows.filter(x=>f.includes(x.id));
+  if(m==="random"){shuffle(rows);if(n>0)rows=rows.slice(0,n)}
+  if(m==="mix")rows=pickMix(rows,n,$("weak").checked);
+  if(!rows.length){alert("該当する問題がありません。");return}
+  deck=rows;index=0;
+  $("setup").classList.add("hidden");$("study").classList.remove("hidden");render();
+}
+function render(){
+  const x=deck[index];if(!x)return;
+  state="ask";
+  $("position").textContent=`${index+1} / ${deck.length}肢`;
+  $("subjectLabel").textContent=`${x.year}・${x.subject} 第${x.q_no}問`;
+  $("bar").style.width=`${(index+1)/deck.length*100}%`;
+  const st=$("stem");st.textContent=x.common_stem||"";
+  const long=(x.common_stem||"").length>260;
+  st.classList.toggle("collapsed",long);$("stemtoggle").classList.toggle("hidden",!long);
+  $("stemtoggle").textContent="▼ 設問文を全部読む";
+  $("branch").textContent=x.branch;
+  const parts=String(x.statement||"").split("\n\n");
+  $("statement").innerHTML=esc(parts[0])+(parts[1]?`<span class="exp">${esc(parts.slice(1).join("\n\n"))}</span>`:"");
+  $("marknote").textContent=x.mark||"";
+  $("judge").classList.remove("hidden");$("peek").classList.remove("hidden");
+  $("result").classList.add("hidden");
+  $("favorite").textContent=favs().includes(x.id)?"★ お気に入り":"☆ お気に入り";
+  $("prev").disabled=index===0;$("next").disabled=index===deck.length-1;
+  window.scrollTo(0,0);
+}
+function today(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function logAnswer(sid,ok){
+  const lg=load(LOG_KEY,{}),d=today();lg[d]=lg[d]||{};const e=lg[d][sid]||{n:0,c:0};e.n++;if(ok)e.c++;lg[d][sid]=e;
+  const keys=Object.keys(lg).sort();while(keys.length>200)delete lg[keys.shift()];save(LOG_KEY,lg);
+}
+function pct(c,n){return n?Math.round(c/n*100):null}
+function accCell(p){return p===null?'<span class="acc">－</span>':`<span class="acc ${p>=80?"hi":p>=60?"mid":"lo"}">${p}%</span>`}
+function drawStatsView(){
+  const r=recs(),lg=load(LOG_KEY,{}),sids=SUBJ_ORDER.filter(s=>all.some(x=>x.subject_id===s));
+  const days=[];for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);days.push(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"))}
+  let T={tot:0,ans:0,n:0,c:0,wn:0,wc:0},html='<tr><th>科目</th><th>回答済/全</th><th>累積</th><th>直近7日</th></tr>';
+  sids.forEach(s=>{
+    const rows=all.filter(x=>x.subject_id===s);let ans=0,n=0,c=0;
+    rows.forEach(x=>{const q=r[x.id];if(q){ans++;n+=q.n;c+=q.c}});
+    let wn=0,wc=0;days.forEach(d=>{const e=lg[d]&&lg[d][s];if(e){wn+=e.n;wc+=e.c}});
+    T.tot+=rows.length;T.ans+=ans;T.n+=n;T.c+=c;T.wn+=wn;T.wc+=wc;
+    html+=`<tr class="${SUBJ_W[s]<1?"minor":""}"><td>${esc(subjName(s))}</td><td>${ans}/${rows.length}</td><td>${accCell(pct(c,n))}</td><td>${accCell(pct(wc,wn))}${wn?`<span class="subtle"> (${wn})</span>`:""}</td></tr>`;
+  });
+  html+=`<tr class="total"><td>全体</td><td>${T.ans}/${T.tot}</td><td>${accCell(pct(T.c,T.n))}</td><td>${accCell(pct(T.wc,T.wn))}${T.wn?`<span class="subtle"> (${T.wn})</span>`:""}</td></tr>`;
+  $("sttable").innerHTML=html;
+  $("stnote").textContent="緑80%以上／橙60%以上／赤60%未満。直近7日の( )内は回答数。成績はこの端末内の記録から集計しています。";
+}
+function showResult(x,pick){
+  const ok=pick===null?null:pick===x.answer;
+  const el=$("result");
+  const head=ok===null?"答え":(ok?"正解！":"不正解…");
+  el.className="result "+(ok===null?"":ok?"ok":"ng");
+  el.innerHTML=`<div class="head">${head}${pick?`（あなた：${esc(pick)}）`:""}</div>
+  <div class="big ${x.answer==="○"?"correct":"wrong"}">${esc(x.answer)}</div>
+  <div class="sub">この問題の正解：${esc(x.official_answer||"－")}${x.full_answer?`<br>空欄の正解：${esc(x.full_answer)}`:""}<br>出典：${esc(x.status)}</div>`;
+  $("judge").classList.add("hidden");$("peek").classList.add("hidden");
+  state="shown";
+}
+function answer(pick){
+  const x=deck[index];if(state!=="ask")return;
+  const r=recs();const q=r[x.id]||{n:0,c:0};q.n++;if(pick===x.answer)q.c++;q.last=pick===x.answer;q.t=Date.now();r[x.id]=q;save(REC_KEY,r);logAnswer(x.subject_id,pick===x.answer);
+  showResult(x,pick);
+}
+$("start").onclick=start;
+$("showstats").onclick=()=>{drawStatsView();$("setup").classList.add("hidden");$("statsview").classList.remove("hidden")};
+$("statsback").onclick=()=>{$("statsview").classList.add("hidden");$("setup").classList.remove("hidden")};
+$("mode").onchange=()=>{const m=$("mode").value;$("weakwrap").classList.toggle("hidden",m!=="mix");$("count").parentNode;};
+$("maru").onclick=()=>answer("○");
+$("batsu").onclick=()=>answer("×");
+$("peek").onclick=()=>showResult(deck[index],null);
+$("next").onclick=()=>{if(index<deck.length-1){index++;render()}};
+$("prev").onclick=()=>{if(index>0){index--;render()}};
+$("home").onclick=()=>{$("study").classList.add("hidden");$("setup").classList.remove("hidden");drawStats()};
+$("favorite").onclick=()=>{const x=deck[index],a=favs(),i=a.indexOf(x.id);if(i>=0)a.splice(i,1);else a.push(x.id);save(FAV_KEY,a);$("favorite").textContent=i>=0?"☆ お気に入り":"★ お気に入り"};
+$("stemtoggle").onclick=()=>{const st=$("stem");const c=st.classList.toggle("collapsed");$("stemtoggle").textContent=c?"▼ 設問文を全部読む":"▲ 閉じる"};
+$("reset").onclick=()=>{if(confirm("学習記録（正誤履歴・科目別成績）をリセットします。お気に入りは残ります。よろしいですか？")){save(REC_KEY,{});save(LOG_KEY,{});drawStats()}};
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))window.addEventListener("load",()=>navigator.serviceWorker.register("./app-sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
