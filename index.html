@@ -31,6 +31,7 @@ button:disabled{opacity:.4;cursor:default}
 .stemtoggle{font-size:12px;color:var(--navy);background:none;padding:0 0 10px;border-radius:0;font-weight:600}
 .branch{display:inline-block;background:var(--navy);color:#fff;border-radius:8px;padding:2px 10px;font-size:13px;font-weight:700;margin-bottom:8px}
 .statement{font-size:19px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:14px}
+.amend{margin-top:12px;padding:10px 12px;background:#fff6df;border:1px solid #efd59a;border-radius:10px;font-size:13px;line-height:1.7;color:#6b4a07}
 .statement .exp{display:block;font-size:12px;color:var(--muted);line-height:1.6}
 .marknote{font-size:12px;color:var(--muted);margin-bottom:12px}
 .judge button{font-size:34px;padding:14px 0;background:#fff;border:2px solid var(--line);color:var(--ink)}
@@ -138,12 +139,12 @@ const SUBJ_META=[["CONST","憲法",1],["ADMIN","行政法",1],["CIVPRO","民事�
 const SUBJ_W=Object.fromEntries(SUBJ_META.map(m=>[m[0],m[2]]));
 const SUBJ_ORDER=SUBJ_META.map(m=>m[0]);
 function yearRank(f){const m=f.match(/^([RSH])(\d+)$/);return m?(m[1]==="H"?1988:2018)+ +m[2]:0}
-function candidates(){const a=[];for(let n=10;n>=1;n--)a.push("R"+String(n).padStart(2,"0"));for(let n=10;n>=1;n--)a.push("S"+String(n).padStart(2,"0"));return a}
-function loadYear(name){return new Promise(res=>{const s=document.createElement("script");s.src="data/"+name+".js?v=5";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)})}
+function candidates(){const a=[];for(let n=10;n>=1;n--)a.push("R"+String(n).padStart(2,"0"));for(let n=10;n>=1;n--)a.push("S"+String(n).padStart(2,"0"));a.push("P01");return a}
+function loadYear(name){return new Promise(res=>{const s=document.createElement("script");s.src="data/"+name+".js?v=6";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)})}
 function subjName(sid){const x=all.find(x=>x.subject_id===sid);return x?x.subject:sid}
 function init(){
   const subs=SUBJ_ORDER.filter(s=>all.some(x=>x.subject_id===s));
-  $("ver").textContent="v005・"+all.length+"肢";
+  $("ver").textContent="v006・"+all.length+"肢";
   $("subject").innerHTML='<option value="ALL">すべて</option>'+subs.map(s=>`<option value="${esc(s)}">${esc(subjName(s))}</option>`).join("");
   const years=[...new Set(all.map(x=>x.year))];
   $("year").innerHTML='<option value="ALL">すべて</option>'+years.map(y=>`<option>${esc(y)}</option>`).join("");
@@ -152,6 +153,7 @@ function init(){
 window.QDATA=[];
 Promise.all(candidates().map(loadYear)).then(()=>{
   const rank=x=>yearRank((x.id||"").split("-")[0]);
+  const PT=window.PATCH||{};window.QDATA.forEach(x=>{const p=PT[x.id];if(p){x.amend=p.note;if(p.answer&&p.answer!==x.answer){x.old_answer=x.answer;x.answer=p.answer}}});
   all=window.QDATA.map((x,i)=>[x,i]).sort((a,b)=>rank(b[0])-rank(a[0])||a[1]-b[1]).map(p=>p[0]);
   if(!all.length){showError("問題データ(data/フォルダのR08.jsなど)を読み込めませんでした。\nindex.html と data フォルダが同じ場所にあるか確認してください。");return}
   init();
@@ -240,7 +242,7 @@ function showResult(x,pick){
   el.className="result "+(ok===null?"":ok?"ok":"ng");
   el.innerHTML=`<div class="head">${head}${pick?`（あなた：${esc(pick)}）`:""}</div>
   <div class="big ${x.answer==="○"?"correct":"wrong"}">${esc(x.answer)}</div>
-  <div class="sub">この問題の正解：${esc(x.official_answer||"－")}${x.full_answer?`<br>空欄の正解：${esc(x.full_answer)}`:""}<br>出典：${esc(x.status)}</div>`;
+  <div class="sub">この問題の正解：${esc(x.official_answer||"－")}${x.full_answer?`<br>空欄の正解：${esc(x.full_answer)}`:""}<br>出典：${esc(x.status)}</div>`+(x.amend?`<div class="amend">⚠ 法改正メモ${x.old_answer?`（出題当時の正解：${esc(x.old_answer)}　→　現行法：${esc(x.answer)}）`:""}<br>${esc(x.amend)}</div>`:"");
   $("judge").classList.add("hidden");$("peek").classList.add("hidden");
   state="shown";
 }
