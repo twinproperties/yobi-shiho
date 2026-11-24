@@ -132,19 +132,19 @@ function recs(){return load(REC_KEY,{})}
 function favs(){return load(FAV_KEY,[])}
 function showError(m){$("error").classList.remove("hidden");$("error").textContent=m}
 let all=[],deck=[],index=0,state="ask";
-// 科目の並び順と出題の重み（主要=1、マイナー=0.1）
+// 科目の並び順と出題の重み（主要=1、民法・商法=1.5、マイナー=0.1）
 const SUBJ_META=[["CONST","憲法",1],["ADMIN","行政法",1],["CIVPRO","民事訴訟法",1],["CRIMINAL","刑法",1],["CRIMPRO","刑事訴訟法",1],
-["CIVIL","民法",1],["COMM","商法",1],["REALREG","不動産登記法",1],["COMMREG","商業登記法",1],
+["CIVIL","民法",1.5],["COMM","商法",1.5],["REALREG","不動産登記法",1],["COMMREG","商業登記法",1],
 ["CIVEXEC","民事執行法",0.1],["CIVPRES","民事保全法",0.1],["DEPOSIT","供託法",0.1],["SCRIVENER","司法書士法",0.1]];
 const SUBJ_W=Object.fromEntries(SUBJ_META.map(m=>[m[0],m[2]]));
 const SUBJ_ORDER=SUBJ_META.map(m=>m[0]);
 function yearRank(f){const m=f.match(/^([RSH])(\d+)$/);return m?(m[1]==="H"?1988:2018)+ +m[2]:0}
-function candidates(){const a=[];for(let n=10;n>=1;n--)a.push("R"+String(n).padStart(2,"0"));for(let n=10;n>=1;n--)a.push("S"+String(n).padStart(2,"0"));a.push("P01");return a}
-function loadYear(name){return new Promise(res=>{const s=document.createElement("script");s.src="data/"+name+".js?v=7";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)})}
+function candidates(){const a=[];for(let n=10;n>=1;n--)a.push("R"+String(n).padStart(2,"0"));for(let n=10;n>=1;n--)a.push("S"+String(n).padStart(2,"0"));for(let n=30;n>=24;n--)a.push("H"+n);a.push("P01");return a}
+function loadYear(name){return new Promise(res=>{const s=document.createElement("script");s.src="data/"+name+".js?v=8";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)})}
 function subjName(sid){const x=all.find(x=>x.subject_id===sid);return x?x.subject:sid}
 function init(){
   const subs=SUBJ_ORDER.filter(s=>all.some(x=>x.subject_id===s));
-  $("ver").textContent="v007・"+all.length+"肢";
+  $("ver").textContent="v008・"+all.length+"肢";
   $("subject").innerHTML='<option value="ALL">すべて</option>'+subs.map(s=>`<option value="${esc(s)}">${esc(subjName(s))}</option>`).join("");
   const years=[...new Set(all.map(x=>x.year))];
   $("year").innerHTML='<option value="ALL">すべて</option>'+years.map(y=>`<option>${esc(y)}</option>`).join("");
@@ -163,7 +163,7 @@ function drawStats(){
   all.forEach(x=>{const q=r[x.id];if(q){n++;q.last?c++:w++}});
   $("stats").innerHTML=`回答済み <b>${n}</b> / ${all.length}肢　直近正解 <b style="color:var(--green)">${c}</b>　直近不正解 <b style="color:var(--red)">${w}</b>`;
   const cnt={};all.forEach(x=>cnt[x.subject_id]=(cnt[x.subject_id]||0)+1);
-  $("counts").textContent="収録："+SUBJ_ORDER.filter(s=>cnt[s]).map(s=>`${subjName(s)} ${cnt[s]}肢`).join(" ／ ")+"　※総合ランダムは主要科目が同率、マイナー科目(民執・民保・供託・司書)は1/10";
+  $("counts").textContent="収録："+SUBJ_ORDER.filter(s=>cnt[s]).map(s=>`${subjName(s)} ${cnt[s]}肢`).join(" ／ ")+"　※総合ランダムは主要科目が同率、民法・商法は1.5倍、マイナー科目(民執・民保・供託・司書)は1/10";
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function pickMix(pool,n,weak){
