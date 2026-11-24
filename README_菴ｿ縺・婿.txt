@@ -7,7 +7,7 @@
 ■ ファイル構成（リポジトリ直下にそのままアップ）
 - index.html / sw.js / app-sw.js / manifest.webmanifest / .nojekyll
 - icons/ （icon-180.png, icon-192.png, icon-512.png）
-- data/ （R08.js〜R03.js = 予備試験 令和8〜3年度。民法・商法を除いたもの／S08.js〜S03.js = 司法書士 令和8〜3年度）
+- data/ （R08.js〜R02.js = 予備試験 令和8〜3年度。民法・商法を除いたもの／S08.js〜S03.js = 司法書士 令和8〜3年度）
 
 ■ 司法書士データの追加
 data フォルダに S08.js, S07.js … （S+令和年2桁）を置くだけで自動で読み込まれます。
