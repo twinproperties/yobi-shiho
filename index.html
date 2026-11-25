@@ -72,6 +72,8 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:10px}
     <option value="mix">総合ランダム（科目バランス）</option>
     <option value="random">ランダム（単純）</option>
     <option value="normal">問題順</option>
+    <option value="key2">重要・頻出論点のみ（2回以上出題）</option>
+    <option value="key3">頻出論点のみ（3回以上出題・多いほど出やすい）</option>
     <option value="wrong">間違えた肢のみ</option>
     <option value="unseen">未回答のみ</option>
     <option value="favorites">お気に入りのみ</option>
@@ -139,12 +141,12 @@ const SUBJ_META=[["CONST","憲法",1],["ADMIN","行政法",1],["CIVPRO","民事�
 const SUBJ_W=Object.fromEntries(SUBJ_META.map(m=>[m[0],m[2]]));
 const SUBJ_ORDER=SUBJ_META.map(m=>m[0]);
 function yearRank(f){const m=f.match(/^([RSH])(\d+)$/);return m?(m[1]==="H"?1988:2018)+ +m[2]:0}
-function candidates(){const a=[];for(let n=10;n>=1;n--)a.push("R"+String(n).padStart(2,"0"));for(let n=10;n>=1;n--)a.push("S"+String(n).padStart(2,"0"));for(let n=30;n>=24;n--)a.push("H"+n);a.push("P01");return a}
-function loadYear(name){return new Promise(res=>{const s=document.createElement("script");s.src="data/"+name+".js?v=8";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)})}
+function candidates(){const a=[];for(let n=10;n>=1;n--)a.push("R"+String(n).padStart(2,"0"));for(let n=10;n>=1;n--)a.push("S"+String(n).padStart(2,"0"));for(let n=30;n>=24;n--)a.push("H"+n);a.push("P01");a.push("T01");return a}
+function loadYear(name){return new Promise(res=>{const s=document.createElement("script");s.src="data/"+name+".js?v=9";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)})}
 function subjName(sid){const x=all.find(x=>x.subject_id===sid);return x?x.subject:sid}
 function init(){
   const subs=SUBJ_ORDER.filter(s=>all.some(x=>x.subject_id===s));
-  $("ver").textContent="v008・"+all.length+"肢";
+  $("ver").textContent="v009・"+all.length+"肢";
   $("subject").innerHTML='<option value="ALL">すべて</option>'+subs.map(s=>`<option value="${esc(s)}">${esc(subjName(s))}</option>`).join("");
   const years=[...new Set(all.map(x=>x.year))];
   $("year").innerHTML='<option value="ALL">すべて</option>'+years.map(y=>`<option>${esc(y)}</option>`).join("");
@@ -154,6 +156,7 @@ window.QDATA=[];
 Promise.all(candidates().map(loadYear)).then(()=>{
   const rank=x=>yearRank((x.id||"").split("-")[0]);
   const PT=window.PATCH||{};window.QDATA.forEach(x=>{const p=PT[x.id];if(p){x.amend=p.note;if(p.answer&&p.answer!==x.answer){x.old_answer=x.answer;x.answer=p.answer}}});
+  const TO=window.TOPIC||{},TG=window.TGROUP||{};window.QDATA.forEach(x=>{const g=TO[x.id];x.tg=g;x.tn=g===undefined?1:TG[g].n});
   all=window.QDATA.map((x,i)=>[x,i]).sort((a,b)=>rank(b[0])-rank(a[0])||a[1]-b[1]).map(p=>p[0]);
   if(!all.length){showError("問題データ(data/フォルダのR08.jsなど)を読み込めませんでした。\nindex.html と data フォルダが同じ場所にあるか確認してください。");return}
   init();
@@ -166,7 +169,8 @@ function drawStats(){
   $("counts").textContent="収録："+SUBJ_ORDER.filter(s=>cnt[s]).map(s=>`${subjName(s)} ${cnt[s]}肢`).join(" ／ ")+"　※総合ランダムは主要科目が同率、民法・商法は1.5倍、マイナー科目(民執・民保・供託・司書)は1/10";
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function pickMix(pool,n,weak){
+function topicW(x){return x.tn>=2?x.tn-1:1}
+function pickMix(pool,n,weak,tw){
   const r=recs(),by={};
   pool.forEach(x=>(by[x.subject_id]=by[x.subject_id]||[]).push(x));
   const out=[],lim=n>0?n:pool.length;
@@ -175,7 +179,7 @@ function pickMix(pool,n,weak){
     const tot=sids.reduce((a,s)=>a+(SUBJ_W[s]??1),0);let t=Math.random()*tot,pick=sids[sids.length-1];
     for(const s of sids){t-=(SUBJ_W[s]??1);if(t<=0){pick=s;break}}
     const arr=by[pick];
-    const ws=arr.map(x=>{if(!weak)return 1;const q=r[x.id];return !q?2:(q.last?1:3)});
+    const ws=arr.map(x=>{const b=tw?topicW(x):1;if(!weak)return b;const q=r[x.id];return b*(!q?2:(q.last?1:3))});
     let u=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;for(;i<ws.length-1;i++){u-=ws[i];if(u<=0)break}
     out.push(arr.splice(i,1)[0]);
   }
@@ -188,7 +192,9 @@ function start(){
   if(m==="unseen")rows=rows.filter(x=>!r[x.id]);
   if(m==="favorites")rows=rows.filter(x=>f.includes(x.id));
   if(m==="random"){shuffle(rows);if(n>0)rows=rows.slice(0,n)}
-  if(m==="mix")rows=pickMix(rows,n,$("weak").checked);
+  if(m==="key2"||m==="key3"){rows=rows.filter(x=>x.tn>=(m==="key3"?3:2));if(!rows.length){alert("該当する論点の肢がありません。年度が増えると増えます。");return}}
+  if(m==="mix")rows=pickMix(rows,n,$("weak").checked,false);
+  if(m==="key2"||m==="key3")rows=pickMix(rows,n,$("weak").checked,true);
   if(!rows.length){alert("該当する問題がありません。");return}
   deck=rows;index=0;
   $("setup").classList.add("hidden");$("study").classList.remove("hidden");render();
@@ -197,7 +203,7 @@ function render(){
   const x=deck[index];if(!x)return;
   state="ask";
   $("position").textContent=`${index+1} / ${deck.length}肢`;
-  $("subjectLabel").textContent=`${x.year}・${x.subject} 第${x.q_no}問`;
+  $("subjectLabel").textContent=`${x.year}・${x.subject} 第${x.q_no}問`+(x.tn>=3?`　★★頻出(${x.tn}回)`:x.tn===2?`　★重要(2回)`:"");
   $("bar").style.width=`${(index+1)/deck.length*100}%`;
   const st=$("stem");st.textContent=x.common_stem||"";
   const long=(x.common_stem||"").length>260;
@@ -232,6 +238,7 @@ function drawStatsView(){
     html+=`<tr class="${SUBJ_W[s]<1?"minor":""}"><td>${esc(subjName(s))}</td><td>${ans}/${rows.length}</td><td>${accCell(pct(c,n))}</td><td>${accCell(pct(wc,wn))}${wn?`<span class="subtle"> (${wn})</span>`:""}</td></tr>`;
   });
   html+=`<tr class="total"><td>全体</td><td>${T.ans}/${T.tot}</td><td>${accCell(pct(T.c,T.n))}</td><td>${accCell(pct(T.wc,T.wn))}${T.wn?`<span class="subtle"> (${T.wn})</span>`:""}</td></tr>`;
+  [["★★頻出論点（3回〜）",x=>x.tn>=3],["★重要論点（2回）",x=>x.tn===2],["その他の肢",x=>x.tn<2]].forEach(([nm,f])=>{const rows=all.filter(f);let ans=0,n=0,c=0;rows.forEach(x=>{const q=r[x.id];if(q){ans++;n+=q.n;c+=q.c}});html+=`<tr class="minor"><td>${nm}</td><td>${ans}/${rows.length}</td><td>${accCell(pct(c,n))}</td><td>－</td></tr>`});
   $("sttable").innerHTML=html;
   $("stnote").textContent="緑80%以上／橙60%以上／赤60%未満。直近7日の( )内は回答数。成績はこの端末内の記録から集計しています。";
 }
@@ -243,6 +250,7 @@ function showResult(x,pick){
   el.innerHTML=`<div class="head">${head}${pick?`（あなた：${esc(pick)}）`:""}</div>
   <div class="big ${x.answer==="○"?"correct":"wrong"}">${esc(x.answer)}</div>
   <div class="sub">この問題の正解：${esc(x.official_answer||"－")}${x.full_answer?`<br>空欄の正解：${esc(x.full_answer)}`:""}<br>出典：${esc(x.status)}</div>`+(x.amend?`<div class="amend">⚠ 法改正メモ${x.old_answer?`（出題当時の正解：${esc(x.old_answer)}　→　現行法：${esc(x.answer)}）`:""}<br>${esc(x.amend)}</div>`:"");
+  if(x.tn>=2){const g=(window.TGROUP||{})[x.tg];el.insertAdjacentHTML("beforeend",`<div class="sub" style="margin-top:8px">📌 この論点は過去 <b>${x.tn}回</b> 出題（${esc(g.ex.join("・"))}）</div>`)}
   $("judge").classList.add("hidden");$("peek").classList.add("hidden");
   state="shown";
 }
@@ -254,7 +262,7 @@ function answer(pick){
 $("start").onclick=start;
 $("showstats").onclick=()=>{drawStatsView();$("setup").classList.add("hidden");$("statsview").classList.remove("hidden")};
 $("statsback").onclick=()=>{$("statsview").classList.add("hidden");$("setup").classList.remove("hidden")};
-$("mode").onchange=()=>{const m=$("mode").value;$("weakwrap").classList.toggle("hidden",m!=="mix");$("count").parentNode;};
+$("mode").onchange=()=>{const m=$("mode").value;$("weakwrap").classList.toggle("hidden",!(m==="mix"||m==="key2"||m==="key3"));$("count").parentNode;};
 $("maru").onclick=()=>answer("○");
 $("batsu").onclick=()=>answer("×");
 $("peek").onclick=()=>showResult(deck[index],null);
