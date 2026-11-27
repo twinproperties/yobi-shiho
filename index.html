@@ -150,12 +150,12 @@ const SUBJ_META=[["CONST","憲法",1],["ADMIN","行政法",1],["CIVPRO","民事�
 const SUBJ_W=Object.fromEntries(SUBJ_META.map(m=>[m[0],m[2]]));
 const SUBJ_ORDER=SUBJ_META.map(m=>m[0]);
 function yearRank(f){const m=f.match(/^(SH|[RSH])(\d+)$/);return m?(m[1]==="H"||m[1]==="SH"?1988:2018)+ +m[2]:0}
-function candidates(){const a=[];for(let n=10;n>=1;n--)a.push("R"+String(n).padStart(2,"0"));for(let n=10;n>=1;n--)a.push("S"+String(n).padStart(2,"0"));for(let n=30;n>=24;n--)a.push("H"+n);a.push("SH30");a.push("SH29");a.push("P01");a.push("T01");return a}
-function loadYear(name){return new Promise(res=>{const s=document.createElement("script");s.src="data/"+name+".js?v=12";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)})}
+function candidates(){const a=[];for(let n=10;n>=1;n--)a.push("R"+String(n).padStart(2,"0"));for(let n=10;n>=1;n--)a.push("S"+String(n).padStart(2,"0"));for(let n=30;n>=24;n--)a.push("H"+n);a.push("SH30");a.push("SH29");a.push("SH28");a.push("SH27");a.push("P01");a.push("T01");return a}
+function loadYear(name){return new Promise(res=>{const s=document.createElement("script");s.src="data/"+name+".js?v=13";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)})}
 function subjName(sid){const x=all.find(x=>x.subject_id===sid);return x?x.subject:sid}
 function init(){
   const subs=SUBJ_ORDER.filter(s=>all.some(x=>x.subject_id===s));
-  $("ver").textContent="v012・"+all.length+"肢";
+  $("ver").textContent="v013・"+all.length+"肢";
   $("subject").innerHTML='<option value="ALL">すべて</option>'+subs.map(s=>`<option value="${esc(s)}">${esc(subjName(s))}</option>`).join("");
   const years=[...new Set(all.map(x=>x.year))];
   $("year").innerHTML='<option value="ALL">すべて</option>'+years.map(y=>`<option>${esc(y)}</option>`).join("");
@@ -181,6 +181,8 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 function gstat(){const r=recs(),g={};all.forEach(x=>{if(x.tn>=2){const o=g[x.tg]||(g[x.tg]={rows:[],n:0,c:0});o.rows.push(x);const q=r[x.id];if(q){o.n+=q.n;o.c+=q.c}}});return g}
 let GS=null;
 function topicW(x,weak){let w=x.tn>=2?x.tn-1:1;if(weak&&x.tn>=2&&GS&&GS[x.tg]){const o=GS[x.tg];if(o.n>=2&&o.c/o.n<0.6)w*=2;else if(o.n===0)w*=1.3}return w}
+const SH_THIRD=new Set(["CONST","CRIMINAL","CIVPRO"]);
+function isSho(x){return /^(S\d|SH)/.test(x.id)}
 function pickMix(pool,n,weak,tw){
   const r=recs(),by={};GS=tw?gstat():null;
   pool.forEach(x=>(by[x.subject_id]=by[x.subject_id]||[]).push(x));
@@ -189,10 +191,11 @@ function pickMix(pool,n,weak,tw){
     const sids=Object.keys(by).filter(s=>by[s].length);if(!sids.length)break;
     const tot=sids.reduce((a,s)=>a+(SUBJ_W[s]??1),0);let t=Math.random()*tot,pick=sids[sids.length-1];
     for(const s of sids){t-=(SUBJ_W[s]??1);if(t<=0){pick=s;break}}
-    const arr=by[pick];
+    let arr=by[pick];
+    if(SH_THIRD.has(pick)){const sh=arr.filter(isSho),yb=arr.filter(x=>!isSho(x));if(sh.length&&yb.length)arr=Math.random()<1/4?sh:yb}
     const ws=arr.map(x=>{const b=tw?topicW(x,weak):1;if(!weak)return b;const q=r[x.id];return b*(!q?2:(q.last?1:3))});
     let u=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;for(;i<ws.length-1;i++){u-=ws[i];if(u<=0)break}
-    out.push(arr.splice(i,1)[0]);
+    const ch=arr[i];by[pick].splice(by[pick].indexOf(ch),1);out.push(ch);
   }
   return out;
 }
